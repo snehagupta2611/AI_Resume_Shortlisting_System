@@ -85,6 +85,6 @@ Now we filled the required data
 <img width="1919" height="858" alt="image" src="https://github.com/user-attachments/assets/3284b71c-8928-4229-ae4d-b2d75fd4cf29" />
 
 Here is our output (I attached 6 resumes of the same person)
-<img width="1895" height="862" alt="image" src="https://github.com/user-attachments/assets/5c5c21d4-e7c3-4e04-94b1-1ce0af5b5613" />
+<img width="1919" height="868" alt="image" src="https://github.com/user-attachments/assets/9e49e658-a926-47cb-a088-9d51fac1bd79" />
 
 
