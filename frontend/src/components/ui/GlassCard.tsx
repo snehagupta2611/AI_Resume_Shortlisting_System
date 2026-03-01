@@ -11,21 +11,9 @@ interface GlassCardProps {
 }
 
 export const GlassCard = ({ children, className = "" }: GlassCardProps) => (
-  /**
-   * ANIMATION ENGINE (Framer Motion)
-   * initial: The card starts slightly smaller (95%) and invisible.
-   * animate: It smoothly "pops" into full size and visibility when the page loads.
-   */
   <motion.div 
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    /**
-     * GLASSMORPHISM STYLING
-     * bg-white/5: A very subtle, transparent white background.
-     * backdrop-blur-xl: The "frosted glass" effect that blurs elements behind the card.
-     * border-white/10: A thin, semi-transparent border to catch the light.
-     * shadow-2xl: A deep shadow to give the card "depth" and lift it off the page.
-     */
     className={`
       bg-white/5 
       backdrop-blur-xl 

@@ -7,10 +7,6 @@
 
 /* 2. Style the 'Thumb' (the part you click and drag) */
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  /* rgba(255, 255, 255, 0.1): 
-     A very subtle, 10% opaque white. This makes the scrollbar look like 
-     part of the glass UI rather than a separate browser element.
-  */
   background: rgba(255, 255, 255, 0.1); 
   
   /* Smooths out the edges of the thumb */

@@ -15,7 +15,7 @@ dotenv.config();
 
 const app = express();
 const PORT =
-    process.env.PORT || 5000;  // Fallback to 3000 if PORT is not defined
+    process.env.PORT || 5000;  // Fallback to 5000 if PORT is not defined
 
 /**
  * GLOBAL MIDDLEWARE
