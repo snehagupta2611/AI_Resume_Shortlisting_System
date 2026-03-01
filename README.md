@@ -1,6 +1,6 @@
 # AI Resume Shortlisting & Interview Assistant System
 
-A high-performance, autonomous intelligence system designed to automate candidate evaluation. This system parses unstructured PDF resumes, compares them against Job Descriptions (JDs) using **Gemini 2.5 Flash**, and generates multi-dimensional scores with natural language explanations.
+A high-performance, autonomous intelligence system designed to select required number of candidates with the help of their resume. This system parses unstructured PDF resumes, compares them against Job Descriptions (JDs) using **Gemini 2.5 Flash**, and generates multi-dimensional scores with natural language explanations.
 
 
 ## 🚀 Setup Instructions
@@ -19,6 +19,7 @@ cd backend && npm install
 cd ../frontend && npm install
 ```
 
+
 ### 2. Environment Setup
 Create a .env file in the backend folder
 ```bash
@@ -26,11 +27,13 @@ PORT = 5000
 GEMINI_API_KEY = your_google_ai_studio_key_here
 ```
 
+
 ### 3. Launch
 Open two separate terminals:
 1. Backend : cd backend && npm run dev
 2. Frontend : cd frontend && npm run dev
 3. Access : Open http://localhost:5173 (Vite default)
+
 
 ## Architecture Overview
 The system utilizes a Service-Oriented Architecture (SOA) built with TypeScript for end-to-end type safety:
@@ -49,12 +52,14 @@ The system utilizes a Service-Oriented Architecture (SOA) built with TypeScript 
 
    - Ownership: Evaluating leadership and end-to-end project responsibility.
 
+
 ## Assumptions & Trade-offs
 1. Stateless Processing: For this MVP, I assumed a stateless flow where data is processed in-memory.
 Trade-off: Faster response times but lacks persistence; a production version would include PostgreSQL/Redis for historical tracking.
 
 2. Prompt Engineering vs. Fine-tuning: I chose advanced Prompt Engineering with JSON Schema over fine-tuning. 
 Trade-off: Lower cost and faster iteration, though fine-tuning might provide slightly higher accuracy for niche industries.
+
 
 ## ⚠️ Known Limitations & Future Roadmap
 - Rate Limits: The current system is limited by the free tier RPM of Google AI Studio.
@@ -70,3 +75,16 @@ Next Step: Implement BullMQ with Redis for background job processing and a Vecto
 - Manual Review & Changes: I manually refactored the Multer middleware to handle complex multipart/form-data, designed the "No-Scroll" Viewport Layout to ensure the UI fits one screen, and tuned the JSON Schema to ensure the LLM never returned malformed data.
 
 - The Disagreement: The AI suggested a simple "Pass/Fail" classification. I disagreed because recruiters need nuance. I manually implemented the Tier-based system (Tier A, B, C) with multi-dimensional scoring to provide deep "Explainability" for every candidate.
+
+
+## Here are the snapshots of the working project
+This is how the page looks initially
+<img width="1918" height="869" alt="image" src="https://github.com/user-attachments/assets/6a6415cc-c9d7-4140-ad33-deec2c8d36b6" />
+
+Now we filled the required data
+<img width="1919" height="858" alt="image" src="https://github.com/user-attachments/assets/3284b71c-8928-4229-ae4d-b2d75fd4cf29" />
+
+Here is our output (I attached 6 resumes of the same person)
+<img width="1895" height="862" alt="image" src="https://github.com/user-attachments/assets/5c5c21d4-e7c3-4e04-94b1-1ce0af5b5613" />
+
+
