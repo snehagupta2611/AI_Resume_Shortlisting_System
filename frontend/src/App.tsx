@@ -48,11 +48,11 @@ const App = () => {
       <div className="max-w-7xl mx-auto h-full flex flex-col">
         
         {/* HEADER: Title and Branding */}
-        <header className="mb-8 flex-shrink-0">
+        <header className="mb-8 shrink-0">
           <motion.h1 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }}
-            className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500"
+            className="text-3xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-blue-500"
           >
             AI Resume Shortlister
           </motion.h1>
