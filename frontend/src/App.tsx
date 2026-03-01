@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, FileText } from 'lucide-react';
+import { Users, FileText, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
@@ -11,127 +11,133 @@ import { GlassCard } from './components/ui/GlassCard';
 import { ResultsList } from './components/results/ResultsList';
 
 const App = () => {
-  /**
-   * APPLICATION STATE
-   * These hooks track the lifecycle of the user's interaction.
-   */
-  const [jdFile, setJdFile] = useState<File | null>(null);      // The Job Description PDF
-  const [resumes, setResumes] = useState<FileList | null>(null); // The array of Resume PDFs
-  const [limit, setLimit] = useState(5);                         // How many candidates to return
-  const [loading, setLoading] = useState(false);                 // UI loading state
-  const [results, setResults] = useState<any[]>([]);             // Data returned from the AI
+  // 1. STATE MANAGEMENT: Tracking inputs and server responses
+  const [jdFile, setJdFile] = useState<File | null>(null);
+  const [resumes, setResumes] = useState<FileList | null>(null);
+  const [limit, setLimit] = useState(5);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
 
-  /**
-   * CORE LOGIC: handleProcess
-   * This function prepares the files for transport and sends them to the backend.
-   */
+  // 2. CORE ACTION: The logic that sends data to the AI
   const handleProcess = async () => {
-    // 1. Guard Clause: Don't run if files are missing
     if (!jdFile || !resumes) return;
 
-    setLoading(true);   
-    
-    /**
-     * 2. DATA PREPARATION
-     * Since we are sending binary files (PDFs), we must use 'FormData' 
-     * instead of a standard JSON object.
-     */
+    setLoading(true);
     const formData = new FormData();
+    
+    // Prepare multi-part form data for file transmission
     formData.append('jd', jdFile);
-    // Convert FileList to an Array to loop through and append each resume
     Array.from(resumes).forEach(file => formData.append('resumes', file));
     formData.append('limit', limit.toString());
 
     try {
-      // 3. API CALL: Sending the data to our Express /shortlist endpoint
-      const response = await axios.post('http://localhost:5000/shortlist', formData);
-      
-      // 4. UPDATE UI: Store the AI-ranked results in state to trigger a re-render
-      setResults(response.data);
+      const { data } = await axios.post('http://localhost:5000/shortlist', formData);
+      setResults(data);
     } catch (err) {
-      console.error("Shortlisting error:", err);
-      alert("Failed to process resumes. Ensure the backend is running.");
+      console.error("API Error:", err);
+      alert("Backend unreachable. Please ensure the server is running on port 5000.");
     } finally {
-      // 5. CLEANUP: Stop the loading spinner regardless of success or failure
       setLoading(false);
     }
   };
 
+  // 3. UI VIEW: A single-frame "Dashboard" layout
   return (
-    // MAIN WRAPPER: Implements the dark theme and radial gradient background
-    <div className="min-h-screen bg-[#0f172a] bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-indigo-900 via-slate-900 to-black text-slate-200 p-6 md:p-12 font-sans">
-      <div className="max-w-6xl mx-auto">
+    <div className="h-screen w-screen overflow-hidden bg-[#0f172a] bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-indigo-900 via-slate-900 to-black text-slate-200 p-6 font-sans">
+      
+      <div className="max-w-7xl mx-auto h-full flex flex-col">
         
-        {/* HEADER SECTION: Animated title using Framer Motion */}
-        <header className="mb-12">
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-blue-500 mb-2"
+        {/* HEADER: Title and Branding */}
+        <header className="mb-8 flex-shrink-0">
+          <motion.h1 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500"
           >
             AI Resume Shortlister
           </motion.h1>
+          <p className="text-slate-400 text-sm mt-1">Intelligent candidate ranking powered by LLMs</p>
         </header>
 
-        {/* MAIN CONTENT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* MAIN DASHBOARD: Split into Controls (Left) and Results (Right) */}
+        <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 min-h-0">
 
-          {/* LEFT COLUMN: Input Controls (Uploaders and Selectors) */}
-          <div className="space-y-6">
-            <FileUploader
-              label="Job Description"
-              icon={<FileText />}
-              accept=".pdf"
-              fileName={jdFile?.name}
-              onChange={(f) => setJdFile(f?.[0] || null)}
-              colorClass="text-cyan-400"
-            />
-
-            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl">
+          {/* CONTROL ASIDE: User Inputs */}
+          <aside className="space-y-6 overflow-y-auto pr-2">
+            <div>
+              <Label text="Step 1: Requirements" />
               <FileUploader
-                label="Candidate Pool"
-                icon={<Users />}
-                multiple
+                label="Job Description"
+                icon={<FileText size={18} />}
                 accept=".pdf"
-                fileName={resumes ? `${resumes.length} Resumes Selected` : undefined}
-                onChange={setResumes}
-                colorClass="text-purple-400"
+                fileName={jdFile?.name}
+                onChange={(f) => setJdFile(f?.[0] || null)}
+                colorClass="text-cyan-400"
               />
-
-              <LimitSelector value={limit} onChange={setLimit} />
-
-              <Button
-                onClick={handleProcess}
-                loading={loading}
-                disabled={!jdFile || !resumes} // Visual feedback: Button is greyed out until files are ready
-                className="mt-6"
-              >
-                Process Shortlist
-              </Button>
             </div>
-          </div>
 
-          {/* RIGHT COLUMN: Results Visualization */}
-          <div className="lg:col-span-2">
-            <GlassCard className="p-8 min-h-150">
-              <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                Analysis Results
-                {results.length > 0 && (
-                  <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full uppercase tracking-wider font-medium">
-                    AI Sorted
-                  </span>
-                )}
-              </h2>
+            <div>
+              <Label text="Step 2: Candidate Pool" />
+              <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
+                <FileUploader
+                  label="Upload Resumes"
+                  icon={<Users size={18} />}
+                  multiple
+                  accept=".pdf"
+                  fileName={resumes ? `${resumes.length} Files Selected` : undefined}
+                  onChange={setResumes}
+                  colorClass="text-purple-400"
+                />
+                <div className="mt-6 border-t border-white/5 pt-4">
+                  <LimitSelector value={limit} onChange={setLimit} />
+                  <Button
+                    onClick={handleProcess}
+                    loading={loading}
+                    disabled={!jdFile || !resumes}
+                    className="mt-4 w-full"
+                  >
+                    Start AI Analysis
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* RESULTS SECTION: AI Output with internal scrolling */}
+          <section className="lg:col-span-2 min-h-0">
+            <GlassCard className="h-full flex flex-col p-6 border-white/10">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold flex items-center gap-2">Analysis Results</h2>
+                {results.length > 0 && <Badge text="AI RANKED" />}
+              </div>
               
-              {/* This component handles the empty state and the list of result cards */}
-              <ResultsList results={results} loading={loading} />
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <ResultsList results={results} loading={loading} />
+              </div>
             </GlassCard>
-          </div>
+          </section>
 
-        </div>
+        </main>
       </div>
     </div>
   );
 };
+
+/**
+ * HELPER COMPONENTS (Internal to App.js for clarity)
+ * These keep the main JSX tree clean and readable.
+ */
+const Label = ({ text }: { text: string }) => (
+  <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-3">
+    {text}
+  </h3>
+);
+
+const Badge = ({ text }: { text: string }) => (
+  <div className="flex items-center gap-2 text-[10px] bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-bold">
+    <Sparkles size={12} />
+    {text}
+  </div>
+);
 
 export default App;
